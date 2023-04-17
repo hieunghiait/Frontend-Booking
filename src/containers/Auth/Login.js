@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { push } from "connected-react-router";
 import * as actions from "../../store/actions";
-
 import './Login.scss';
 import { FormattedMessage } from 'react-intl';
-
+import { handleLoginApi } from '../../services/userService'
 
 class Login extends Component {
     // This is the constructor with "props" as parameter.
@@ -17,6 +16,7 @@ class Login extends Component {
             username: '',
             password: '',
             isShowPassword: false,
+            errMessage: '',
         }
     }
     // Defines a function 'handleOnChangeUsername' which takes an event object as its parameter.
@@ -39,9 +39,22 @@ class Login extends Component {
         // console.log(event.target.value)
     }
 
-    handleLogin = () => {
-        console.log('username: ', this.state.username, 'password: ', this.state.password)
-        console.log('all state: ', this.state)
+    handleLogin = async () => {
+        // console.log('username: ', this.state.username, 'password: ', this.state.password)
+        // console.log('all state: ', this.state)
+        this.setState({
+            errMessage: ''
+        })
+
+        try {
+            await handleLoginApi(this.state.username, this.state.password);
+        } catch (e) {
+            console.log('test o day', e.message);
+            console.log(e);
+            this.setState({
+                errMessage: e.message
+            })
+        }
     }
     // Defines a function 'handleShowHidePassword' with no parameters.
     handleShowHidePassword = () => {
@@ -86,6 +99,10 @@ class Login extends Component {
                                     <i class={this.state.isShowPassword ? 'far fa-eye' : 'fas fa-eye-slash'}></i>
                                 </span>
                             </div>
+                        </div>
+                        {/* add more notification */}
+                        <div className='col-12' style={{ color: 'red' }}>
+                            {this.state.errMessage}
                         </div>
                         <div className='col-12'>
                             <button className='btn-login' onClick={() => { this.handleLogin() }}>

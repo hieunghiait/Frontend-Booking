@@ -3,7 +3,8 @@ import _ from 'lodash';
 import config from './config';
 
 const instance = axios.create({
-    baseURL:  config.api.API_BASE_URL,
+    baseURL: config.api.API_BASE_URL,
+    //add withCredentials
     withCredentials: true
 });
 

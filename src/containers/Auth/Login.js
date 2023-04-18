@@ -5,7 +5,7 @@ import * as actions from "../../store/actions";
 import './Login.scss';
 import { FormattedMessage } from 'react-intl';
 import { handleLoginApi } from '../../services/userService'
-
+import { userLoginSuccess } from '../../store/actions/userActions'
 class Login extends Component {
     // This is the constructor with "props" as parameter.
     constructor(props) {
@@ -42,18 +42,27 @@ class Login extends Component {
     handleLogin = async () => {
         // console.log('username: ', this.state.username, 'password: ', this.state.password)
         // console.log('all state: ', this.state)
-        this.setState({
-            errMessage: ''
-        })
 
         try {
-            await handleLoginApi(this.state.username, this.state.password);
-        } catch (e) {
-            console.log('test o day', e.message);
-            console.log(e);
-            this.setState({
-                errMessage: e.message
-            })
+            let data = await handleLoginApi(this.state.username, this.state.password)
+            if (data && data.errCode !== 0) {
+                this.setState({
+                    errMessage: data.message
+                })
+            }
+            if (data && data.errCode == 0) {
+                //todo
+                this.props.userLoginSuccess(data.user)
+                console.log('Login sucessfully')
+            }
+        } catch (error) {
+            if (error.response) {
+                if (error.response.data) {
+                    this.setState({
+                        errMessage: error.response.data.message
+                    })
+                }
+            }
         }
     }
     // Defines a function 'handleShowHidePassword' with no parameters.
@@ -146,8 +155,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         navigate: (path) => dispatch(push(path)),
-        adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
-        adminLoginFail: () => dispatch(actions.adminLoginFail()),
+        userLoginSuccess: (userInfo) => dispatch(actions.userLoginSuccess(userInfo))
     };
 };
 // Passes the Login component as an argument to the higher-order component returned by 'connect()'.

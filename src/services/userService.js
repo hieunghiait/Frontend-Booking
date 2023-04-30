@@ -32,4 +32,16 @@ const createNewUserService = (data) => {
     console.log('check data from service: ', data)
     return axios.post('/api/create-new-user', data)
 }
-export { handleLoginApi, getAllUsers, createNewUserService }
+/**
+ * This function deletes a user from the server.
+ * @param {*} userId  - The ID of the user to delete.
+ * @returns {Promise} A promise object representing the status of the deletion.
+ */
+const deleteUserService = (userId) => {
+    return axios.delete('/api/delete-user', {
+        data: {
+            id: userId
+        }
+    });
+}
+export { handleLoginApi, getAllUsers, createNewUserService, deleteUserService }
